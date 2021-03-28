@@ -88,46 +88,55 @@ const urlFiltering = function (pageUrl, tabId) {
 chrome.runtime.onInstalled.addListener(() => {
   // Set the extension settings to default
   chrome.storage.sync.set({
-    general: {
-      apply: false, // false
-      showHTMLPlayerControls: false, // false
+    settings: {
+      general: {
+        apply: false, // false
+        showHTMLPlayerControls: false, // false
+        headerbarContentTakesFullPageWidth: false, // false
+      },
+      index: {
+        apply: false, // false
+        hideRightPanel: false, // false
+        reduceStoriesBarGaps: false, // false
+        reduceGapBetweenPublications: false, // false
+        biggerPublications: false, // false
+      },
+      profile: {
+        apply: true, // false
+        zeroGapPublicationsGrid: true, // false
+        zeroGapReelsGrid: true, // false
+        zeroGapIGTVGrid: true, // false
+        imagesByRow: 3, // 3
+        profileLinkWidthFix: false, // false
+        backgroundColor: '#fafafa', // '#fafafa'
+        fontColor: '',
+        linksColor: '',
+        buttonsBackgroundColor: '',
+        buttonsFontColor: '',
+        inactiveTabsFontColor: '',
+        activeTabFontColor: '',
+        roundSpinnedReelsButton: true,
+        roundProfilePicture: true,
+        betterVerifiedUserBadge: false,
+        hideSuggestionsButton: false,
+      },
     },
-    index: {
-      apply: true, // false
-      hideRightPanel: true, // false
-    },
-    profile: {
-      apply: true, // false
-      zeroGapPublicationsGrid: true, // false
-      zeroGapReelsGrid: true, // false
-      zeroGapIGTVGrid: true, // false
-      imagesByRow: 3, // 3
-      profileLinkWidthFix: false, // false
-      backgroundColor: '#fafafa', // '#fafafa'
-      fontColor: '',
-      linksColor: '',
-      buttonsBackgroundColor: '',
-      buttonsFontColor: '',
-      inactiveTabsFontColor: '',
-      activeTabFontColor: '',
-      roundSpinnedReelsButton: true,
-      roundProfilePicture: true,
-      betterVerifiedUserBadge: false,
-      hideSuggestionsButton: false,
+    other: {
+      todo: true,
     },
   });
+});
 
-  // Event listener when a page is loaded for the first time
-  chrome.webNavigation.onCompleted.addListener(function (details) {
-    if (details.url) {
-      urlFiltering(details.url, details.tabId);
-    }
-  });
+// Event listener when a page is loaded for the first time
+chrome.webNavigation.onCompleted.addListener(function (details) {
+  if (details.url) {
+    urlFiltering(details.url, details.tabId);
+  }
+});
 
-  // Event listener when a page's URL is changed
-  chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-    if (changeInfo.url) {
-      urlFiltering(changeInfo.url, tabId);
-    }
-  });
+// Event listener when a page's URL is changed
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+  if (changeInfo.url) {
+    urlFiltering(changeInfo.url, tabId);
+  }
 });
