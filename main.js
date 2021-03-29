@@ -9,6 +9,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
  * @param {String} message The message coming from the background worker script
  */
 const mainHandler = function (message) {
+  console.log(message);
   // TODO: find a way to wait until the page is fully loaded before doing anything
 
   // Fetch the settings before doing anything
@@ -103,14 +104,17 @@ const mainHandler = function (message) {
         const publicationsWrapper = mainBlock.querySelector(publicationsWrapperFetchString);
 
         if (publicationsWrapper != null) {
-          // Publications row
-          const publicationsRowClasses = `div.${Array.from(publicationsWrapper.firstChild.classList).join('.')}`;
+          // Check if the publications grid exists
+          if (publicationsWrapper.firstChild != null && publicationsWrapper.firstChild.firstChild != null) {
+            // Publications row
+            const publicationsRowClasses = `div.${Array.from(publicationsWrapper.firstChild.classList).join('.')}`;
 
-          // Publications column
-          const publicationsColumnClasses = `div.${Array.from(publicationsWrapper.firstChild.firstChild.classList).join('.')}`;
+            // Publications column
+            const publicationsColumnClasses = `div.${Array.from(publicationsWrapper.firstChild.firstChild.classList).join('.')}`;
 
-          globalStyle += `${mainBlockFetchString} ${publicationsWrapperFetchString} ${publicationsRowClasses}{margin:0;}`;
-          globalStyle += `${mainBlockFetchString} ${publicationsWrapperFetchString} ${publicationsColumnClasses}{margin:0;}`;
+            globalStyle += `${mainBlockFetchString} ${publicationsWrapperFetchString} ${publicationsRowClasses}{margin:0;}`;
+            globalStyle += `${mainBlockFetchString} ${publicationsWrapperFetchString} ${publicationsColumnClasses}{margin:0;}`;
+          }
         }
       }
     } else if (message === 'SBI-reels-feed') {

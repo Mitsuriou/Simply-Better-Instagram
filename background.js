@@ -1,3 +1,5 @@
+let lastURL = '';
+
 /**
  * Filter the page URL and send a message to the tab running the script based on the URL patterns
  * @param {String} pageUrl The URL of the page loaded in the tab running the script
@@ -137,6 +139,9 @@ chrome.webNavigation.onCompleted.addListener(function (details) {
 // Event listener when a page's URL is changed
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.url) {
-    urlFiltering(changeInfo.url, tabId);
+    lastURL = changeInfo.url;
+  }
+  if (changeInfo.status === 'complete') {
+    urlFiltering(lastURL, tabId);
   }
 });
