@@ -1,3 +1,5 @@
+console.log('script loaded');
+
 // Listen from any message coming from the background worker script
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   mainHandler(request.message);

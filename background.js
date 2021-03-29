@@ -1,5 +1,3 @@
-let lastURL = '';
-
 /**
  * Filter the page URL and send a message to the tab running the script based on the URL patterns
  * @param {String} pageUrl The URL of the page loaded in the tab running the script
@@ -92,15 +90,15 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.set({
     settings: {
       general: {
-        apply: false, // false
+        apply: true, // false
         showHTMLPlayerControls: false, // false
-        headerbarContentTakesFullPageWidth: false, // false
+        headerbarContentTakesFullPageWidth: true, // false
       },
       index: {
-        apply: false, // false
-        hideRightPanel: false, // false
-        reduceStoriesBarGaps: false, // false
-        reduceGapBetweenPublications: false, // false
+        apply: true, // false
+        hideRightPanel: true, // false
+        reduceStoriesBarGaps: true, // false
+        reduceGapBetweenPublications: true, // false
         biggerPublications: false, // false
       },
       profile: {
@@ -129,19 +127,47 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-// Event listener when a page is loaded for the first time
-chrome.webNavigation.onCompleted.addListener(function (details) {
-  if (details.url) {
-    urlFiltering(details.url, details.tabId);
+const sendMessage = function (details) {
+  if (details.frameId === 0) {
+    // Fires only when details.url === currentTab.url
+    chrome.tabs.get(details.tabId, function (tab) {
+      if (tab.url === details.url) {
+        console.log('onHistoryStateUpdated');
+        urlFiltering(details.url, details.tabId);
+      }
+    });
   }
+};
+
+// Event listener when a page is loaded for the first time
+chrome.webNavigation.onCompleted.addListener((details) => {
+  console.log('onCompleted');
 });
 
 // Event listener when a page's URL is changed
+// chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+//   if (changeInfo.url) {
+//     urlFiltering(changeInfo.url, tabId);
+//   }
+// });
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.url) {
-    lastURL = changeInfo.url;
+    console.log('onUpdated');
   }
-  if (changeInfo.status === 'complete') {
-    urlFiltering(lastURL, tabId);
-  }
+});
+
+chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+  console.log('onHistoryStateUpdated');
+});
+
+chrome.webNavigation.onDOMContentLoaded.addListener((details) => {
+  console.log('onDOMContentLoaded');
+});
+
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+  chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+    if (activeInfo.tabId === tabId && changeInfo.url) {
+      console.log(`URL has changed to ${changeInfo.url}`);
+    }
+  });
 });
